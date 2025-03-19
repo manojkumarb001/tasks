@@ -9,33 +9,35 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const SAMPLE_USER = {
-    userID: "EMP004",
-    Name: "Manoj",
-    designation: "Manager",
-    "Reporting Manager": "Mr. LMN",
-    location: "Mumbai",
-  };
-
   useEffect(() => {
+    const userID = sessionStorage.getItem("userID"); // Get user ID from sessionStorage
+    if (!userID) {
+      setError("User not logged in. Redirecting to login...");
+      setTimeout(() => navigate("/"), 2000); // Redirect to login after 2 seconds
+      return;
+    }
+
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch("http://172.16.4.27:4000/user/view/EMP004");
+        const response = await fetch(`http://172.16.4.27:4000/user/view/${userID}`, {
+          method: "GET",
+        });
+
         const data = await response.json();
 
-        if (data.statuscode === 200) {
+        if (response.ok && data.statuscode === 200) {
           setUserData(data.data);
         } else {
-          throw new Error("Error fetching user details");
+          throw new Error(data.message || "Error fetching user details");
         }
       } catch (err) {
-        setError("Server unavailable. Using sample data.");
-        setUserData(SAMPLE_USER);
+        setError("Error fetching user details. Please try again.");
+        console.error(err); // Log the error for debugging
       }
     };
 
     fetchUserDetails();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="dashboard-container">

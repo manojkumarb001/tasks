@@ -28,6 +28,10 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Store the userID in sessionStorage after successful login
+        sessionStorage.setItem("userID", userID);
+
+        // Redirect to Dashboard
         navigate("/dashboard");
       } else {
         setError(data.message || "Login failed");
