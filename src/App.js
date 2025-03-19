@@ -1,19 +1,22 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+// import { AuthProvider } from "./context/AuthContext";
 import LoginPage from "./Components/LoginPage";
-import DashBoard from "./Components/DashBoard";
+import Dashboard from "./Components/DashBoard";
+
+
 import "./App.css";
-export default function App() {
+import Task from "./Components/Task";
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route
-        path="/dashboard"
-        element={
-          
-            <DashBoard />
-        }
-      />
-    </Routes>
+    
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/task" element={<Task />} />
+
+      </Routes>
   );
 }
+
+export default App;

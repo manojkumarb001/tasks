@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaBars } from "react-icons/fa"; // Menu Icon
+import "./Dashboard.css"; // Import CSS for styling
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const SAMPLE_USER = {
+    userID: "EMP004",
+    Name: "Manoj",
+    designation: "Manager",
+    "Reporting Manager": "Mr. LMN",
+    location: "Mumbai",
+  };
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -15,10 +26,11 @@ export default function Dashboard() {
         if (data.statuscode === 200) {
           setUserData(data.data);
         } else {
-          setError("Error fetching user details");
+          throw new Error("Error fetching user details");
         }
       } catch (err) {
-        setError("Failed to fetch user details");
+        setError("Server unavailable. Using sample data.");
+        setUserData(SAMPLE_USER);
       }
     };
 
@@ -27,24 +39,50 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <header>
-        <h1 style={{ color: "white" }}>Dashboard</h1>
+      {/* Header Section */}
+      <header className="header">
+        <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
+          <FaBars size={25} />
+        </div>
+        <h1>Dashboard</h1>
+        <button className="logout-btn" onClick={() => navigate("/")}>
+          Logout
+        </button>
       </header>
 
-      {error ? (
-        <p style={{ color: "red" }}>{error}</p>
-      ) : userData ? (
-        <div style={{ color: "white" }}>
-          <h2>Welcome, {userData.Name}!</h2>
-          <p>Designation: {userData.designation}</p>
-          <p>Reporting Manager: {userData["Reporting Manager"]}</p>
-          <p>Location: {userData.location}</p>
+      {/* Sidebar Menu (Toggles On Click) */}
+      {menuOpen && (
+        <div className="sidebar">
+          <ul>
+            <li onClick={() => navigate("/task")}>Task Page</li>
+            <li onClick={() => navigate("/assigning")}>Assigning Page</li>
+            <li onClick={() => navigate("/status")}>Status Page</li>
+          </ul>
         </div>
-      ) : (
-        <p style={{ color: "white" }}>Loading user details...</p>
       )}
 
-      <button onClick={() => navigate("/")}>Logout</button>
+      {/* User Info */}
+      <div className="user-profile">
+        {error && <p className="error">{error}</p>}
+        {userData ? (
+          <div className="profile-card">
+            <h2>Welcome, {userData.Name}!</h2>
+            <p><strong>User ID:</strong> {userData.userID}</p>
+            <p><strong>Designation:</strong> {userData.designation}</p>
+            <p><strong>Reporting Manager:</strong> {userData["Reporting Manager"]}</p>
+            <p><strong>Location:</strong> {userData.location}</p>
+          </div>
+        ) : (
+          <p className="loading">Loading user details...</p>
+        )}
+      </div>
+
+      {/* Dashboard Navigation Cards */}
+      <div className="dashboard-boxes">
+        <div className="box" onClick={() => navigate("/task")}>Task Page</div>
+        <div className="box" onClick={() => navigate("/assigning")}>Assigning Page</div>
+        <div className="box" onClick={() => navigate("/status")}>Status Page</div>
+      </div>
     </div>
   );
 }
